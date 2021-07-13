@@ -6,7 +6,7 @@ import { useTheme } from '@material-ui/core/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { sessionActions } from '../../store';
-import t from '../../common/localization';
+//import t from '../../common/localization';
 import StartPage from '../../StartPage';
 
 const useStyles = makeStyles((theme) => ({
@@ -25,11 +25,22 @@ const LoginForm = () => {
   const history = useHistory();
   const theme = useTheme();
 
+  let [language, setLanguage] = useState('en');
+
   const [failed, setFailed] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const registrationEnabled = useSelector((state) => (state.session.server ? state.session.server.registration : false));
   const emailEnabled = useSelector((state) => (state.session.server ? state.session.server.emailEnabled : false));
+
+ const handleChange=(event) =>{
+   console.log(event.target.value)
+    setLanguage(event.target.value);
+    dispatch(sessionActions.updateLanguege(event.target.value));
+
+
+  }
+  const t =useSelector((state) => (state.session.language));
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -74,7 +85,7 @@ const LoginForm = () => {
             required
             fullWidth
             error={failed}
-            label={t('userEmail')}
+            label={t['userEmail']}
             name="email"
             value={email}
             autoComplete="email"
@@ -90,7 +101,7 @@ const LoginForm = () => {
             required
             fullWidth
             error={failed}
-            label={t('userPassword')}
+            label={t['userPassword']}
             name="password"
             value={password}
             type="password"
@@ -109,20 +120,21 @@ const LoginForm = () => {
             disabled={!email || !password}
             fullWidth
           >
-            {t('loginLogin')}
+            {t.loginLogin}
           </Button>
         </Grid>
         <Grid item container>
           <Grid item>
             <Button onClick={() => history.push('/register')} disabled={!registrationEnabled} color="secondary">
-              {t('loginRegister')}
+              {t.loginRegister}
             </Button>
           </Grid>
           <Grid item xs>
             <FormControl variant="filled" fullWidth>
-              <InputLabel>{t('loginLanguage')}</InputLabel>
-              <Select>
-                <MenuItem value="en">English</MenuItem>
+              <InputLabel>{t.loginLanguage}</InputLabel>
+              <Select value={language} onChange={handleChange}>
+                <MenuItem value="en"   >English</MenuItem>
+                <MenuItem value="ar"  >Arabic</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -130,7 +142,7 @@ const LoginForm = () => {
         {emailEnabled && (
         <Grid item container justify="flex-end">
           <Grid item>
-            <Link onClick={() => history.push('/reset-password')} className={classes.resetPassword} underline="none">{t('loginReset')}</Link>
+            <Link onClick={() => history.push('/reset-password')} className={classes.resetPassword} underline="none">{t['loginReset']}</Link>
           </Grid>
         </Grid>
         )}
@@ -140,3 +152,4 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+export let language;

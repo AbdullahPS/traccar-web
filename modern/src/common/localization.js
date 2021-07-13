@@ -52,8 +52,10 @@ import uz from '../../../web/l10n/uz.json';
 import vi from '../../../web/l10n/vi.json';
 import zh from '../../../web/l10n/zh.json';
 import zh_TW from '../../../web/l10n/zh_TW.json';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
-const supportedLanguages = {
+export const supportedLanguages = {
   af: { data: af, name: 'Afrikaans' },
   ar: { data: ar, name: 'العربية' },
   az: { data: az, name: 'Azərbaycanca' },
@@ -111,10 +113,11 @@ const supportedLanguages = {
 };
 
 const languages = window.navigator.languages !== undefined ? window.navigator.languages.slice() : [];
-let language = window.navigator.userLanguage || window.navigator.language;
+let language = window.navigator.userLanguage || window.navigator.language
 languages.push(language);
 languages.push(language.substring(0, 2));
 languages.push('en');
+languages.push('ar');
 for (let i = 0; i < languages.length; i++) {
   language = languages[i].replace('-', '_');
   if (language in supportedLanguages) {
@@ -128,8 +131,59 @@ for (let i = 0; i < languages.length; i++) {
   }
 }
 
-const selectedLanguage = supportedLanguages[language];
+let selectedLanguage = supportedLanguages['ar'];
 
-export const findStringKeys = (predicate) => Object.keys(selectedLanguage.data).filter(predicate);
 
-export default (key) => selectedLanguage.data[key];
+
+
+
+export const findStringKeys = (state) => {
+
+  try {
+      const serializedState = localStorage.getItem(state);
+      if(serializedState === null){
+          return  (predicate) => Object.keys(selectedLanguage.data).filter(predicate);
+          
+      }
+      return (predicate) => Object.keys(serializedState.data).filter(predicate);
+  } catch (err) {
+      return undefined;
+  }
+};
+
+export default  (key) => {
+
+  try {
+      const serializedState = localStorage.getItem('state');
+    console.log('localstorage +' +localStorage.getItem('state'))
+
+      if(serializedState === null){
+        console.log('returned null');
+
+          
+          return selectedLanguage;
+          
+      }
+      console.log('I GOT'+JSON.parse(serializedState).data[key]);
+      return JSON.parse(serializedState).data[key];
+  } catch (err) {
+      console.log('returned undefined');
+      return undefined;
+  }
+
+};
+
+
+export const saveState = (state) => {
+  try{
+    console.log('state is ' +state);
+      const serializedState =state;
+      console.log('I SAVED' + JSON.stringify(serializedState)); //gives correct (sould be saved )
+
+      localStorage.setItem('state', JSON.stringify(serializedState));
+      ///console.log('from save state '+ JSON.parse(localStorage.getItem('state').data))
+  } catch (err){
+    console.log('satte was not saved with error ' +err);
+      return undefined;
+  }
+}

@@ -131,7 +131,7 @@ for (let i = 0; i < languages.length; i++) {
   }
 }
 
-let selectedLanguage = supportedLanguages['ar'];
+const selectedLanguage = supportedLanguages['en'];
 
 
 
